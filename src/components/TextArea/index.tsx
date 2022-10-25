@@ -32,9 +32,3 @@ export default function TextArea({ label, name, placeholder, isRequired, registe
     </S.AreaGroup>
   );
 }
-
-// S.InputWrapper error={error[name]}>
-//   <S.CustomInput placeholder={placeholder} {...register(name)} />
-//   <FiAlertCircle size={20} />
-// </S.InputWrapper>
-// {error[name] && <span className="errorMessage">{error[name]?.message?.toString()}</span>}

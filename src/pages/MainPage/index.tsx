@@ -7,7 +7,7 @@ import TextArea from "../../components/TextArea";
 import * as S from "./styles";
 import { collectionCreationSchema } from "../../validators/CollectionCreation";
 import { ChangeEvent } from "react";
-import { handleIpfsUpload } from "../../services/ipfs";
+import { useIpfs } from "../../hooks/useIpfs";
 
 export default function MainPage() {
   const {
@@ -16,17 +16,36 @@ export default function MainPage() {
     handleSubmit,
   } = useForm({ resolver: yupResolver(collectionCreationSchema) });
 
+  const { ipfs, isIpfsReady, ipfsError } = useIpfs();
+
+  const uploadToIpfs = async (content: ArrayBuffer) => {
+    if (ipfsError) {
+      alert("Error during IPFS initialization.");
+      console.error(ipfsError);
+      return;
+    } else if (ipfs && isIpfsReady) {
+      const fileToAdd = {
+        content: content,
+      };
+
+      const file = await ipfs.add(fileToAdd);
+
+      console.log(`Preview: https://ipfs.io/ipfs/${file.cid}`);
+    } else {
+      alert("IPFS is loading, try again.");
+    }
+  };
+
   const submitForm = (data: FieldValues) => {
     try {
       console.log(data);
+
       if (data.collectibleImage[0]) {
         const reader = new FileReader();
         reader.readAsArrayBuffer(data.collectibleImage[0]);
         reader.onloadend = async () => {
           if (reader.result) {
-            console.log("reader.result", reader.result);
-            const cid = await handleIpfsUpload({ content: "oii" });
-            console.log(`Preview: https://ipfs.io/ipfs/${cid}`);
+            await uploadToIpfs(reader.result as ArrayBuffer);
           } else {
             throw new Error("Erro ao processar o arquivo inserido.");
           }

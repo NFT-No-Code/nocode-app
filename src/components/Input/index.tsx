@@ -28,7 +28,13 @@ export default function Input({ name, placeholder, label, isRequired, register, 
         )}
       </label>
       <S.InputWrapper error={error[name]}>
-        <S.CustomInput placeholder={placeholder} {...register(name)} type={type ? type : "text"} onChange={onChange} />
+        <S.CustomInput
+          placeholder={placeholder}
+          {...register(name, {
+            onChange: onChange,
+          })}
+          type={type ? type : "text"}
+        />
         <FiAlertCircle size={20} />
       </S.InputWrapper>
       {error[name] && <span className="errorMessage">{error[name]?.message?.toString()}</span>}
