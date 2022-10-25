@@ -63,12 +63,18 @@ export const NavButton = styled.button`
   transition: all 0.3s;
   cursor: pointer;
 
+  text-decoration: none;
+
   svg {
     width: 25px;
     height: 25px;
   }
 
   &:hover {
+    background-color: rgb(var(--secondary-color));
+  }
+
+  &.activeButton {
     background-color: rgb(var(--secondary-color));
   }
 `;

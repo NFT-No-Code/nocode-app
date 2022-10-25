@@ -6,6 +6,10 @@ export const AuthPageWrapper = styled.div`
 
   width: 100vw;
   height: 100vh;
+
+  p {
+    margin: 0;
+  }
 `;
 
 export const ContentSection = styled.section`
@@ -14,12 +18,14 @@ export const ContentSection = styled.section`
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  gap: 4rem;
 `;
 
 export const MainTextGroup = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: 0.8rem;
 
   h1 {
     margin: 0;
@@ -30,6 +36,7 @@ export const ActionGroup = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: 0.8rem;
 `;
 
 export const ButtonGroup = styled.div`

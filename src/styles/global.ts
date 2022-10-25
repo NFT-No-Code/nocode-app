@@ -5,13 +5,13 @@ import backgroundImage from "../assets/background.png";
 export const GlobalStyle = createGlobalStyle`
   :root {
     ${DarkTheme}
-    font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
+    font-family: Poppins, Arial, sans-serif;
     font-size: 16px;
     line-height: 24px;
     font-weight: 400;
 
     color-scheme: light dark;
-    color: rgba(255, 255, 255, 0.87);
+    color: rgba(255, 255, 255);
     background-color: #242424;
     background-image: url(${backgroundImage});
     background-repeat: no-repeat;
@@ -40,7 +40,7 @@ export const GlobalStyle = createGlobalStyle`
     min-height: 100vh;
   }
 
-  button {
+  button, a {
     font-family: 'Barlow';
   }
 
