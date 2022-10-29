@@ -22,7 +22,7 @@ export const useIpfs = () => {
   const initIpfs = async () => {
     if (!ipfs) {
       try {
-        ipfs = await create();
+        ipfs = await create({ repo: String(Date.now() + Math.random()) });
       } catch (error) {
         if (error instanceof Error) {
           ipfs = null;
