@@ -41,7 +41,7 @@ export default function SideNav() {
       </S.MainButtonsContainer>
       <hr />
       <S.HomeButtonContainer>
-        <S.NavButton as="a" href="https://nocode-five.vercel.app/" target="_blank">
+        <S.NavButton as="a" href="https://colecionavel.digital" target="_blank">
           <RiHomeFill />
           Início
         </S.NavButton>

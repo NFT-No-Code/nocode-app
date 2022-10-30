@@ -106,6 +106,11 @@ export const ConfirmButton = styled.button`
   transition: all 0.3s;
   cursor: pointer;
 
+  &:disabled {
+    background-color: grey;
+    cursor: initial;
+  }
+
   &:hover {
     transform: scale(101%);
   }

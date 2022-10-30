@@ -1,3 +1,4 @@
+import { ChangeEvent, useContext, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { FieldValues } from "react-hook-form/dist/types";
@@ -6,16 +7,20 @@ import SideNav from "../../components/SideNav";
 import TextArea from "../../components/TextArea";
 import * as S from "./styles";
 import { collectionCreationSchema } from "../../validators/CollectionCreation";
-import { ChangeEvent, useEffect } from "react";
 import { useIpfs } from "../../hooks/useIpfs";
 import { CID } from "ipfs-core/dist/src/block-storage";
 import { Contract } from "ethers";
 import addresses from "../../contracts/addresses";
 import abis from "../../contracts/abis";
-import { useContractFunction } from "@usedapp/core";
-import { toast } from "react-toastify";
+import { useContractFunction, useEthers } from "@usedapp/core";
+import { Id, toast } from "react-toastify";
+import { PageContext } from "../../providers/PageProvider";
+import { ConfirmationContext } from "../../providers/ConfirmationProvider";
 
 export default function MainPage() {
+  const [loadingToastId, setLoadingToastId] = useState<Id>("");
+  const [isButtonDisabled, setButtonDisabled] = useState<boolean>(false);
+
   const {
     formState: { errors },
     register,
@@ -23,21 +28,46 @@ export default function MainPage() {
   } = useForm({ resolver: yupResolver(collectionCreationSchema) });
 
   const { ipfs, isIpfsReady, ipfsError } = useIpfs();
+  const { chainId } = useEthers();
 
   const contract = new Contract(addresses.cloneFactory, abis.cloneFactory);
   const { state, send, events } = useContractFunction(contract, "createNewCollection");
 
+  const { setPageToRender } = useContext(PageContext);
+  const { setCloneEvent } = useContext(ConfirmationContext);
+
   useEffect(() => {
+    if (events) {
+      setCloneEvent(events);
+      setPageToRender("confirmationPage");
+    }
+
     switch (state.status) {
       case "PendingSignature":
-        toast("Autorize a transação na Metamask.");
+        toast.info("Autorize a transação na Metamask.");
+        break;
+      case "Mining":
+        const miningToastId = toast.loading("Minerando.");
+        setLoadingToastId(miningToastId);
+        break;
+      case "Success":
+        toast.update(loadingToastId, { render: "Transação confirmada.", type: "success", isLoading: false, autoClose: 5000 });
+        break;
+      case "Fail":
+        toast.error(`Erro na transação: ${state.errorMessage}`);
+        setButtonDisabled(false);
+        break;
+      case "Exception":
+        toast.error(`Erro ao processar a transação: ${state.errorMessage}`);
+        setButtonDisabled(false);
+        break;
     }
-  }, [state]);
+  }, [state, events]);
 
   const handleIpfsUpload = async (content: ArrayBuffer | string): Promise<CID | undefined> => {
     if (ipfsError) {
       console.error(ipfsError);
-      throw new Error("Error during IPFS initialization.");
+      throw new Error("Erro durante a inicialização do IPFS.");
     } else if (ipfs && isIpfsReady) {
       const fileToAdd = {
         content: content,
@@ -48,7 +78,7 @@ export default function MainPage() {
       console.log(`Preview: https://ipfs.io/ipfs/${file.cid}`);
       return file.cid;
     } else {
-      throw new Error("IPFS is loading, try again.");
+      throw new Error("IPFS está carregando, tente novamente.");
     }
   };
 
@@ -69,24 +99,40 @@ export default function MainPage() {
     });
   };
 
+  const checkChain = () => {
+    if (chainId !== 5) {
+      toast.warn("Você deve usar a rede Goerli.", { icon: "⚠️" });
+      return false;
+    }
+    return true;
+  };
+
   const submitForm = async (data: FieldValues) => {
     try {
+      if (checkChain() === false) {
+        return;
+      }
+      setButtonDisabled(true);
+
       const image = data.collectibleImage[0];
+
       let tokenMetadata: { name: string; description: string; image?: string } = {
         name: data.collectibleName,
         description: data.collectibleDesc,
       };
+
       if (image) {
         const imageBuffer = await readImageFile(image);
         const imageCid = await handleIpfsUpload(imageBuffer);
         tokenMetadata.image = "ipfs://" + String(imageCid);
       }
+
       const tokenMetadataCid = await handleIpfsUpload(JSON.stringify(tokenMetadata));
-      const txnReceipt = await send(data.collectionName, "NFT", "ipfs://" + tokenMetadataCid);
-      console.log("txnReceipt", txnReceipt);
+      await send(data.collectionName, "NFT", "ipfs://" + tokenMetadataCid);
+      setButtonDisabled(false);
     } catch (error) {
       if (error instanceof Error) {
-        alert(error.message);
+        toast.error("Erro: " + error.message);
       }
     }
   };
@@ -97,7 +143,7 @@ export default function MainPage() {
 
     if (!allowedFiles.test(filePath)) {
       event.target.value = "";
-      alert("You must provide a png, jpeg, jpg, or gif file.");
+      toast.warning("Apenas arquivos png, jpeg, jpg, ou gif são suportados.");
     }
   };
 
@@ -131,7 +177,9 @@ export default function MainPage() {
               />
               <S.ConfirmSection>
                 <p>Revise os campos antes de confirmar.</p>
-                <S.ConfirmButton type="submit">Confirmar criação</S.ConfirmButton>
+                <S.ConfirmButton type="submit" disabled={isButtonDisabled}>
+                  Confirmar criação
+                </S.ConfirmButton>
               </S.ConfirmSection>
             </S.CollectionContainer>
             <S.CollectibleContainer>

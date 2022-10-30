@@ -1,7 +1,7 @@
 import { createContext, ReactNode, useState, Dispatch, SetStateAction, useEffect } from "react";
 import { useEthers } from "@usedapp/core";
 
-type PageType = "authPage" | "mainPage" | "helpPage";
+type PageType = "authPage" | "mainPage" | "helpPage" | "confirmationPage";
 
 interface IPageProviderProps {
   children: ReactNode;
@@ -20,8 +20,6 @@ export default function PageProvider({ children }: IPageProviderProps) {
   const { account } = useEthers();
   const [activeButton, setActiveButton] = useState<string>("dashboard-btn");
   const [pageToRender, setPageToRender] = useState<PageType>("authPage");
-
-  console.log("account", account);
 
   useEffect(() => {
     if (!account) {
