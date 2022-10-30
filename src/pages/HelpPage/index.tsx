@@ -18,7 +18,7 @@ export default function HelpPage() {
           <h2>Passo a passo completo em vídeo:</h2>
           <p>Tutorial de como criar sua carteira e criar seu primeiro NFT com a colecionavel.digital</p>
           <div className="videoWrapper">
-            <iframe src="https://www.youtube.com/embed/TfwLmmEMb0Y" allowFullScreen></iframe>
+            <iframe src="https://www.youtube.com/embed/dUoOtaK_Fog" allowFullScreen></iframe>
           </div>
         </S.VideoContainer>
       </S.HelpSection>

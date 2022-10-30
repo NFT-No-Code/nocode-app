@@ -12,8 +12,6 @@ interface IPageContext {
   setPageToRender: Dispatch<SetStateAction<PageType>>;
   activeButton: string;
   setActiveButton: Dispatch<SetStateAction<string>>;
-  // isUserAuthenticated: boolean;
-  // setIsUserAuthenticated: Dispatch<SetStateAction<boolean>>;
 }
 
 export const PageContext = createContext({} as IPageContext);
@@ -22,7 +20,6 @@ export default function PageProvider({ children }: IPageProviderProps) {
   const { account } = useEthers();
   const [activeButton, setActiveButton] = useState<string>("dashboard-btn");
   const [pageToRender, setPageToRender] = useState<PageType>("authPage");
-  // const [isUserAuthenticated, setIsUserAuthenticated] = useState<boolean>(!!account);
 
   console.log("account", account);
 
@@ -34,8 +31,5 @@ export default function PageProvider({ children }: IPageProviderProps) {
     setPageToRender("mainPage");
   }, [account]);
 
-  return (
-    // <PageContext.Provider value={{ pageToRender, setPageToRender, isUserAuthenticated, setIsUserAuthenticated }}>
-    <PageContext.Provider value={{ pageToRender, setPageToRender, activeButton, setActiveButton }}>{children}</PageContext.Provider>
-  );
+  return <PageContext.Provider value={{ pageToRender, setPageToRender, activeButton, setActiveButton }}>{children}</PageContext.Provider>;
 }

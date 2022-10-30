@@ -13,6 +13,10 @@ export const AreaGroup = styled.div`
     font-weight: 400;
     font-size: 0.95rem;
     color: rgba(var(--secondary-color), 0.85);
+
+    span {
+      color: #ff0000;
+    }
   }
 
   .errorMessage {

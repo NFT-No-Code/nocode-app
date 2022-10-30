@@ -6,8 +6,14 @@ import SideNav from "../../components/SideNav";
 import TextArea from "../../components/TextArea";
 import * as S from "./styles";
 import { collectionCreationSchema } from "../../validators/CollectionCreation";
-import { ChangeEvent } from "react";
+import { ChangeEvent, useEffect } from "react";
 import { useIpfs } from "../../hooks/useIpfs";
+import { CID } from "ipfs-core/dist/src/block-storage";
+import { Contract } from "ethers";
+import addresses from "../../contracts/addresses";
+import abis from "../../contracts/abis";
+import { useContractFunction } from "@usedapp/core";
+import { toast } from "react-toastify";
 
 export default function MainPage() {
   const {
@@ -18,11 +24,20 @@ export default function MainPage() {
 
   const { ipfs, isIpfsReady, ipfsError } = useIpfs();
 
-  const uploadToIpfs = async (content: ArrayBuffer) => {
+  const contract = new Contract(addresses.cloneFactory, abis.cloneFactory);
+  const { state, send, events } = useContractFunction(contract, "createNewCollection");
+
+  useEffect(() => {
+    switch (state.status) {
+      case "PendingSignature":
+        toast("Autorize a transação na Metamask.");
+    }
+  }, [state]);
+
+  const handleIpfsUpload = async (content: ArrayBuffer | string): Promise<CID | undefined> => {
     if (ipfsError) {
-      alert("Error during IPFS initialization.");
       console.error(ipfsError);
-      return;
+      throw new Error("Error during IPFS initialization.");
     } else if (ipfs && isIpfsReady) {
       const fileToAdd = {
         content: content,
@@ -31,28 +46,48 @@ export default function MainPage() {
       const file = await ipfs.add(fileToAdd);
 
       console.log(`Preview: https://ipfs.io/ipfs/${file.cid}`);
+      return file.cid;
     } else {
-      alert("IPFS is loading, try again.");
+      throw new Error("IPFS is loading, try again.");
     }
   };
 
-  const submitForm = (data: FieldValues) => {
-    try {
-      console.log(data);
+  const readImageFile = (file: File): Promise<ArrayBuffer | string> => {
+    const reader = new FileReader();
 
-      if (data.collectibleImage[0]) {
-        const reader = new FileReader();
-        reader.readAsArrayBuffer(data.collectibleImage[0]);
-        reader.onloadend = async () => {
-          if (reader.result) {
-            await uploadToIpfs(reader.result as ArrayBuffer);
-          } else {
-            throw new Error("Erro ao processar o arquivo inserido.");
-          }
-        };
+    return new Promise((resolve, reject) => {
+      reader.onerror = () => {
+        reader.abort();
+        reject(new Error("Erro ao processar o arquivo inserido."));
+      };
+
+      reader.onloadend = () => {
+        resolve(reader.result!);
+      };
+
+      reader.readAsArrayBuffer(file);
+    });
+  };
+
+  const submitForm = async (data: FieldValues) => {
+    try {
+      const image = data.collectibleImage[0];
+      let tokenMetadata: { name: string; description: string; image?: string } = {
+        name: data.collectibleName,
+        description: data.collectibleDesc,
+      };
+      if (image) {
+        const imageBuffer = await readImageFile(image);
+        const imageCid = await handleIpfsUpload(imageBuffer);
+        tokenMetadata.image = "ipfs://" + String(imageCid);
       }
+      const tokenMetadataCid = await handleIpfsUpload(JSON.stringify(tokenMetadata));
+      const txnReceipt = await send(data.collectionName, "NFT", "ipfs://" + tokenMetadataCid);
+      console.log("txnReceipt", txnReceipt);
     } catch (error) {
-      alert(error);
+      if (error instanceof Error) {
+        alert(error.message);
+      }
     }
   };
 
