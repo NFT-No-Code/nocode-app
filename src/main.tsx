@@ -1,6 +1,3 @@
-import * as dotenv from "dotenv";
-dotenv.config();
-
 import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
@@ -10,7 +7,7 @@ import { Config, DAppProvider, Goerli } from "@usedapp/core";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-const ALCHEMY_KEY = process.env.PROVIDER_API_KEY;
+const ALCHEMY_KEY = import.meta.env.VITE_PROVIDER_API_KEY;
 
 const providerConfig: Config = {
   readOnlyChainId: Goerli.chainId,
