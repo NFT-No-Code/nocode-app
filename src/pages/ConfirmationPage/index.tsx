@@ -31,7 +31,7 @@ export default function ConfirmationPage() {
           <p>A visualização é feita pelo etherscan, basta clicar no endereço para ser redirecionado.</p>
           <a href={`https://goerli.etherscan.io/address/${contractAddress}`} target="_blank">
             <FaEthereum />
-            {contractAddress && contractAddress}
+            {contractAddress && `Ver confirmação no explorador de blocos - ${contractAddress}`}
           </a>
         </S.ContractAddressSection>
         <S.VisualizationSection>

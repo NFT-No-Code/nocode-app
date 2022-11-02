@@ -47,11 +47,11 @@ export default function MainPage() {
         toast.info("Autorize a transação na Metamask.");
         break;
       case "Mining":
-        const miningToastId = toast.loading("Minerando.");
+        const miningToastId = toast.loading("Criando seu NFT...");
         setLoadingToastId(miningToastId);
         break;
       case "Success":
-        toast.update(loadingToastId, { render: "Transação confirmada.", type: "success", isLoading: false, autoClose: 5000 });
+        toast.update(loadingToastId, { render: "NFT criado. Transação concluída!", type: "success", isLoading: false, autoClose: 5000 });
         break;
       case "Fail":
         toast.error(`Erro na transação: ${state.errorMessage}`);

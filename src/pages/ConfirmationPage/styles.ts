@@ -58,6 +58,8 @@ export const ContractAddressSection = styled.div`
   }
 
   a {
+    color: #fff;
+
     svg {
       width: 0.9rem;
       height: 0.9rem;
