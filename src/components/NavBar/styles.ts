@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { Menu } from "@headlessui/react";
 
 export const MenuWrapper = styled.nav`
   display: flex;
@@ -77,4 +78,61 @@ export const NavButton = styled.button`
   &.activeButton {
     background-color: rgb(var(--secondary-color));
   }
+`;
+
+//Dropdown
+
+export const DropdownMenuButton = styled(Menu.Button)`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 40px;
+  height: 40px;
+
+  border-radius: 2px;
+  padding: 0.6rem;
+  background-color: rgb(var(--primary-color));
+  color: rgb(var(--primary-00));
+
+  outline: none;
+  border: none;
+
+  transition: all 0.3s;
+  cursor: pointer;
+
+  svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  &:hover {
+    transform: scale(105%);
+  }
+`;
+
+export const DropdownItens = styled(Menu.Items)`
+  position: fixed;
+  top: 0;
+  right: 0;
+
+  width: 100vw;
+  height: 100vh;
+
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: space-between;
+
+  padding: 4rem 2rem;
+
+  background-color: rgb(var(--primary-00));
+`;
+
+export const DropdownMenuClose = styled.div`
+  display: flex;
+`;
+
+export const DropdownMenuContent = styled.div`
+  display: flex;
+  flex-direction: column;
 `;

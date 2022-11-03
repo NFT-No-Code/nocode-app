@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { FieldValues } from "react-hook-form/dist/types";
 import Input from "../../components/Input";
-import SideNav from "../../components/SideNav";
+import SideNav from "../../components/NavBar";
 import TextArea from "../../components/TextArea";
 import * as S from "./styles";
 import { collectionCreationSchema } from "../../validators/CollectionCreation";

@@ -1,4 +1,4 @@
-import SideNav from "../../components/SideNav";
+import SideNav from "../../components/NavBar";
 import * as S from "./styles";
 import { FaEthereum } from "react-icons/fa";
 import { useContext, useState } from "react";

@@ -1,7 +1,7 @@
 import { useEthers } from "@usedapp/core";
 import { useContext } from "react";
 import Button from "../../components/Button";
-import SideNav from "../../components/SideNav";
+import SideNav from "../../components/NavBar";
 import { PageContext } from "../../providers/PageProvider";
 import { isRpcError } from "../../utils";
 import * as S from "./styles";

@@ -29,6 +29,11 @@ export const HelpSection = styled.section`
   h1 {
     margin: 0;
   }
+
+  .videosContainer {
+    overflow-y: auto;
+    max-height: 100%;
+  }
 `;
 
 export const TextCointainer = styled.div`
